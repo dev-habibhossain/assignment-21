@@ -1,4 +1,4 @@
-# Exam-2 — Laravel Blog
+# Exam-21 — Laravel Blog
 
 A minimal blog application built with Laravel and Blade templates. This repository contains a public-facing blog layout and a simple admin UI for managing posts, categories, banners, and profile data. The admin interface includes Tailwind-styled forms with client-side live previews for images and post content.
 
@@ -32,7 +32,7 @@ A minimal blog application built with Laravel and Blade templates. This reposito
 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/dev-habibhossain/assignment-21.git
 cd app.blogs
 ```
 
