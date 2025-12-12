@@ -24,7 +24,7 @@ Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('blogs.show');
 use App\Http\Controllers\AdminController;
 
 // Admin routes
-Route::prefix('admin')->group(function () {
+Route::prefix('admin/dashboard')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin.home');
     Route::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
     Route::get('/profile/edit', [AdminController::class, 'editProfile'])->name('admin.profile.edit');
@@ -39,5 +39,10 @@ Route::prefix('admin')->group(function () {
     Route::get('/banner/create', [AdminController::class, 'bannerCreate'])->name('admin.banner.create');
     Route::post('/banner', [AdminController::class, 'bannerStore'])->name('admin.banner.store');
     Route::put('/banner/{id}', [AdminController::class, 'bannerStore'])->name('admin.banner.update');
+
+    // Categories management
+    Route::get('/categories', [AdminController::class, 'categoriesIndex'])->name('admin.categories.index');
+    Route::get('/categories/create', [AdminController::class, 'categoriesCreate'])->name('admin.categories.create');
+    Route::post('/categories', [AdminController::class, 'categoriesStore'])->name('admin.categories.store');
     
 });

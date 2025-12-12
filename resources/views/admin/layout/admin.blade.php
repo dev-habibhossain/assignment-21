@@ -42,10 +42,11 @@
 				<nav class="p-6">
 					<h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6">Menu</h3>
 					<ul class="space-y-2">
-						<li><a href="/admin" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Dashboard</a></li>
-						<li><a href="/admin/banner" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Banner</a></li>
-						<li><a href="/admin/posts" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Posts</a></li>
-						<li><a href="/admin/profile" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Profile</a></li>
+						<li><a href="/admin/dashboard" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Dashboard</a></li>
+						<li><a href="/admin/dashboard/posts" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Posts</a></li>
+						<li><a href="/admin/dashboard/categories" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Categories</a></li>
+						<li><a href="/admin/dashboard/banner" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Banner</a></li>
+						<li><a href="/admin/dashboard/profile" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Profile</a></li>
 						<li><hr class="my-3 border-gray-200"></li>
 						<li><a href="/" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">View Site</a></li>
 					</ul>

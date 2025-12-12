@@ -62,4 +62,23 @@ class AdminController extends Controller
         // Handle storing banner data (to be connected to database)
         return redirect()->route('admin.banner.index')->with('success', 'Banner saved successfully!');
     }
+
+    // Categories management
+    public function categoriesIndex()
+    {
+        // Get categories (stub for now)
+        $categories = []; // Fetch from DB later
+        return view('admin.pages.manageCategories', ['categories' => $categories]);
+    }
+
+    public function categoriesCreate()
+    {
+        return view('admin.pages.newCategories');
+    }
+
+    public function categoriesStore(Request $request)
+    {
+        // Handle storing category data (to be connected to database)
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully!');
+    }
 }
