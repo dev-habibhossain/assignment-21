@@ -13,7 +13,7 @@ Login - BlogHub
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Welcome Back</h1>
             <p class="text-center text-gray-600 mb-8">Sign in to your account to continue</p>
 
-            <form class="space-y-6" action="/login" method="POST">
+            <form class="space-y-6" action="{{ route('login.submit') }}" method="POST">
                 @csrf
                 <!-- Email -->
                 <div>
@@ -22,7 +22,7 @@ Login - BlogHub
                         type="email" 
                         id="email" 
                         name="email"
-                        placeholder="you@example.com"
+                        placeholder="Enter your email"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-800 focus:ring-1 focus:ring-gray-800 transition"
                     >
