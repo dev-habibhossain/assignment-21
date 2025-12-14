@@ -27,10 +27,16 @@
                 <a href="/blogs" class="text-gray-700 hover:text-gray-900 font-semibold transition">Blog</a>
                 <a href="/categories" class="text-gray-700 hover:text-gray-900 font-semibold transition">Categories</a>
             </div>
+            @if (session()->has('user_id'))
+            <div class="flex gap-4">
+                <button><a href="{{route('custom.logout')}}" class="px-4 py-2 text-gray-800 border border-gray-800 rounded hover:bg-gray-50 transition font-semibold">Logout</a></button>
+            </div>
+            @else
             <div class="flex gap-4">
                 <a href="/login" class="px-4 py-2 text-gray-800 border border-gray-800 rounded hover:bg-gray-50 transition font-semibold">Login</a>
                 <a href="/register" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition font-semibold">Sign Up</a>
             </div>
+            @endif
         </div>
     </nav>
 

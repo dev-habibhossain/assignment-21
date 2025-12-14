@@ -9,8 +9,10 @@ use App\Http\Controllers\PublicController;
 Route::get('/', [PublicController::class, 'home'])->name('home');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login/submit', [AuthController::class, 'loginPost'])->name('login.submit');
+Route::post('/login/submit', [AuthController::class, 'userLogin'])->name('login.submit');
 Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register/submit', [AuthController::class, 'userRegister'])->name('register.submit');
+Route::get('/logout', [AuthController::class, 'logOut'])->middleware('auth')->name('custom.logout');
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
@@ -50,13 +52,10 @@ Route::prefix('admin/dashboard')
 use App\Http\Controllers\AuthorController;
 
 Route::prefix('author/dashboard')
-    // Apply all required middleware (authenticated AND author role) once here.
     ->middleware(['auth', 'author']) 
     ->group(function () {
         
         // --- Author Dashboard & Profile ---
-        // These routes now automatically inherit the prefix ('author/dashboard') 
-        // and the middleware (['auth', 'author']).
         Route::get('/', [AuthorController::class, 'index'])->name('author.home');
         Route::get('/profile', [AuthorController::class, 'profile'])->name('author.profile');
         Route::get('/profile/edit', [AuthorController::class, 'editProfile'])->name('author.profile.edit');

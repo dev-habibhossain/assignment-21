@@ -23,7 +23,6 @@ class AdminMiddleware
             return redirect()->route('author.home');
         }
 
-        // The user is an admin, proceed to the requested route.
         return $next($request);
     }
 }
