@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-    public function home()
+    public function index()
     {
         return view('author.pages.home');
     }
