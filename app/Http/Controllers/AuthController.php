@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AuthorUser;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Session; 
 
 class AuthController extends Controller
 {
@@ -16,23 +16,26 @@ class AuthController extends Controller
     }
     public function userRegister(Request $request)
     {
-        // Validate the request data
-        $img = null;
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:6',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:author_users,email|max:255', 
+            'password' => 'required', 
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
         ]);
+        $imagePath = null;
+        if ($request->hasFile('profile_image')) {
+            $imagePath = $request->file('profile_image')->store('avatars', 'public');
+        }
 
         AuthorUser::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'img' => $img,
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password'], 
+            'image' => $imagePath,
             'role' => 'author',
         ]);
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'Registration successful! You can now log in.');
     }
 
     // Login Function
@@ -42,30 +45,31 @@ class AuthController extends Controller
     }
     public function userLogin(Request $request)
     {
-        // Validate the request data
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required',
         ]);
-
+        
         $user = AuthorUser::where('email', $credentials['email'])->where('password', $credentials['password'])->first();
 
-        session(['user_id' => $user->id, 'role' => $user->role]);
+        if ($user) {
+            $request->session()->regenerate(); 
+            Session::put(['user_id' => $user->id, 'role' => $user->role]);
 
-        $isAdmin = AuthorUser::where('role', 'admin')->first();
-        $isAuthor = AuthorUser::where('role', 'author')->first();
-        if($user){
-            // Authentication passed...
-            if($isAdmin){
-                return redirect()->route('admin.home');
+            
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.home')->with('success', 'Welcome to the Admin Dashboard!');
             }
-            if($isAuthor){
-                return redirect()->route('author.home');
+            if ($user->role === 'author') {
+                return redirect()->route('author.home')->with('success', 'Welcome to the Author Dashboard!');
             }
+            
+            return redirect()->intended('/'); 
         }
+
     }
 
-    // Logout Function
+
     public function logOut(Request $request)
     {
         $request->session()->forget('user_id');

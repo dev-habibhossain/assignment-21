@@ -30,7 +30,7 @@
 				<div class="flex items-center gap-6">
 					<a href="/" class="text-gray-700 hover:text-gray-900 font-semibold transition">← Back to Site</a>
 					<span class="text-sm text-gray-600">Welcome, <strong>{{ auth()->user()->name ?? 'Author' }}</strong></span>
-					<a href="/logout" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition font-semibold text-sm">Logout</a>
+					<a href="{{ route('custom.logout') }}" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition font-semibold text-sm">Logout</a>
 				</div>
 			</div>
 		</nav>

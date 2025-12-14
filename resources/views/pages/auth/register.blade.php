@@ -21,7 +21,7 @@ Register - BlogHub
                     <label class="block text-sm font-semibold text-gray-700">Profile Image</label>
                     
                     {{-- Avatar Preview (Small Circle) --}}
-                    <img id="avatarPreview" src="https://via.placeholder.com/150/f3f4f6/6b7280?text=+" alt="Avatar Preview" class="w-24 h-24 object-cover rounded-full border-4 border-gray-200 shadow-md">
+                    <img id="avatarPreview" src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3407.jpg" alt="Avatar Preview" class="w-24 h-24 object-cover rounded-full border-4 border-gray-200 shadow-md">
                     
                     {{-- Image File Input Design --}}
                     <div class="w-full">
@@ -73,7 +73,7 @@ Register - BlogHub
                     <p class="text-xs text-gray-600 mt-1">Must be at least 8 characters</p>
                 </div>
 
-                <div>
+                {{-- <div>
                     <label for="confirm" class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
                     <input 
                         type="password" 
@@ -83,11 +83,11 @@ Register - BlogHub
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-800 focus:ring-1 focus:ring-gray-800 transition"
                     >
-                </div>
+                </div> --}}
 
                 <label class="flex items-start">
                     <input type="checkbox" class="w-4 h-4 border border-gray-300 rounded mt-1 focus:ring-gray-800">
-                    <span class="ml-2 text-sm text-gray-600">I agree to the <a href="#" class="text-gray-700 font-semibold hover:text-gray-900">Terms of Service</a> and <a href="#" class="text-gray-700 font-semibold hover:text-gray-900">Privacy Policy</a></span>
+                    <span class="ml-2 text-sm text-gray-600">I agree to the <a  class="text-gray-700 font-semibold hover:text-gray-900">Terms of Service</a> and <a class="text-gray-700 font-semibold hover:text-gray-900">Privacy Policy</a></span>
                 </label>
 
                 <button 
