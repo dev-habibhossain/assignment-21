@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model {
     protected $fillable = ['name', 'description', 'image'];
 
-    public function posts() {
-        return $this->hasMany(Post::class);
+    public function blogs() {
+        return $this->hasMany(Blog::class);
     }
 }
