@@ -33,7 +33,7 @@
             {{-- FORM ACTION FIX: Use PUT method and update route --}}
             <form action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
-                @method('PUT')
+                @method('PUT') {{-- Corrected form method to POST with @method('PUT') --}}
 
                 <div>
                     <label for="categoryName" class="block text-sm font-medium text-gray-700">Category Name</label>
@@ -45,8 +45,8 @@
 
                 <div>
                     <label for="categoryDescription" class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea id="categoryDescription" name="description" rows="3" placeholder="Brief description of the category" 
-                              class="mt-1 block w-full rounded-md border-gray-200 px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200">{{ old('description', $category->description) }}</textarea>
+                    <textarea id="categoryDescription" name="short_desc" rows="3" placeholder="Brief description of the category" 
+                            class="mt-1 block w-full rounded-md border-gray-200 px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200">{{ old('short_desc', $category->short_desc) }}</textarea>
                 </div>
 
                 <div>
@@ -92,7 +92,8 @@
                          
                     <div class="p-4">
                         <h4 id="categoryPreviewName" class="text-lg font-bold text-gray-900">{{ $category->name }}</h4>
-                        <p id="categoryPreviewDescription" class="text-sm text-gray-600 mt-2">{{ $category->description }}</p>
+                        {{-- FIX APPLIED HERE: Changed $category->description to $category->short_desc --}}
+                        <p id="categoryPreviewDescription" class="text-sm text-gray-600 mt-2">{{ $category->short_desc }}</p>
                     </div>
                 </div>
                 <div class="text-xs text-gray-500">

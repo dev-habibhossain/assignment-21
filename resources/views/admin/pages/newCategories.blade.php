@@ -41,7 +41,7 @@
 
                 <div>
                     <label for="categoryDescription" class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea id="categoryDescription" name="description" rows="3" placeholder="Brief description of the category" class="mt-1 block w-full rounded-md border-gray-200 px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200">{{ old('description') }}</textarea>
+                    <textarea id="categoryDescription" name="short_desc" rows="3" placeholder="Brief description of the category" class="mt-1 block w-full rounded-md border-gray-200 px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200">{{ old('short_desc') }}</textarea>
                 </div>
 
                 <div>

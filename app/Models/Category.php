@@ -4,7 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model {
-    protected $fillable = ['name', 'description', 'image'];
+    protected $fillable = ['name', 'short_desc', 'image'];
 
     public function blogs() {
         return $this->hasMany(Blog::class);

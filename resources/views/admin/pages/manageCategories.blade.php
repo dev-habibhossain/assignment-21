@@ -40,7 +40,7 @@
                              onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200?text=No+Image';">
                              
                         <h4 class="text-lg font-bold text-gray-900">{{ $category->name }}</h4>
-                        <p class="text-sm text-gray-600 mt-1">{{ $category->description ?? 'No description' }}</p>
+                        <p class="text-sm text-gray-600 mt-1">{{ $category->short_desc ?? 'No description' }}</p>
                         
                         <div class="mt-3 flex gap-2">
                             {{-- EDIT Link --}}

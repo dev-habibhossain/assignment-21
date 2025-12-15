@@ -211,87 +211,84 @@ class AdminController extends Controller
     }
 
     // --- CREATE (Form) ---
-    public function categoriesCreate()
-    {
-        return view('admin.pages.newCategories'); 
+   public function categoriesCreate()
+{
+    // Make sure 'admin.pages.newCategories' matches 'admin.pages.createCategory'
+    return view('admin.pages.newCategories'); 
+}
+
+// --- CREATE (Store) ---
+public function categoriesStore(Request $request)
+{
+    // 1. Validation
+    $request->validate([
+        'name' => 'required|max:255|unique:categories,name',
+        'short_desc' => 'nullable|max:500', 
+        'image_file' => 'nullable|image|max:2048', 
+        'image_url' => 'nullable|url',
+    ]);
+
+    // 2. Determine Image Path
+    $imagePath = 'https://via.placeholder.com/300x200?text=No+Image';
+
+    if ($request->hasFile('image_file')) {
+        $imagePath = $request->file('image_file')->store('category_images', 'public');
+    } elseif ($request->filled('image_url')) {
+        $imagePath = $request->input('image_url');
     }
 
-    // --- CREATE (Store) ---
-    public function categoriesStore(Request $request)
-    {
-        // 1. Validation
-        $request->validate([
-    'name' => 'required|max:255|unique:categories,name',
-    'short_desc' => 'nullable|max:500', 
-    'image_file' => 'nullable|image|max:2048', 
-    'image_url' => 'nullable|url',
-]);
+    // 3. Create the Category
+    Category::create([
+        'name' => $request->name,
+        'short_desc' => $request->short_desc, // <-- CORRECT: Field is included
+        'image' => $imagePath,
+    ]);
 
-        // 2. Determine Image Path
-        $imagePath = 'https://via.placeholder.com/300x200?text=No+Image';
+    return redirect()->route('admin.categories.index')->with('success', 'Category created successfully!');
+}
 
-        if ($request->hasFile('image_file')) {
-            $imagePath = $request->file('image_file')->store('category_images', 'public');
-        } elseif ($request->filled('image_url')) {
-            $imagePath = $request->input('image_url');
+// --- EDIT (Form) ---
+public function categoriesEdit($id)
+{
+    $category = Category::findOrFail($id); 
+    return view('admin.pages.updateCategory', compact('category')); 
+}
+
+
+public function categoriesUpdate(Request $request, $id)
+{
+    
+    $request->validate([
+        'name' => 'required|max:255|unique:categories,name,'.$id,
+        'short_desc' => 'nullable|max:500', 
+        'image_file' => 'nullable|image|max:2048', 
+        'image_url' => 'nullable|url',
+    ]);
+    
+    $category = Category::findOrFail($id);
+    $imagePath = $category->image; 
+    
+    if ($request->hasFile('image_file')) {
+        
+        if ($category->image && strpos($category->image, 'http') === false) {
+            Storage::disk('public')->delete($category->image);
         }
-
-        // 3. Create the Category
-        Category::create([
-    'name' => $request->name,
-    'short_desc' => $request->short_desc, 
-    'image' => $imagePath,
-]);
-
-        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully!');
+        $imagePath = $request->file('image_file')->store('category_images', 'public');
+        
+    } elseif ($request->filled('image_url')) {
+        $imagePath = $request->input('image_url');
+        
     }
-    
-    // --- EDIT (Form) ---
-    public function categoriesEdit($id)
-    {
-        
-        $category = Category::findOrFail($id); 
-        
-        
-        return view('admin.pages.updateCategory', compact('category')); 
-    }
-    
-    
-    public function categoriesUpdate(Request $request, $id)
-    {
-        
-        $request->validate([
-    'name' => 'required|max:255|unique:categories,name,'.$id,
-    'short_desc' => 'nullable|max:500', 
-    'image_file' => 'nullable|image|max:2048', 
-    'image_url' => 'nullable|url',
-]);
-        
-        $category = Category::findOrFail($id);
-        
-        
-        $imagePath = $category->image; 
-        
-        if ($request->hasFile('image_file')) {
-            
-            if ($category->image && strpos($category->image, 'http') === false) {
-                Storage::disk('public')->delete($category->image);
-            }
-            $imagePath = $request->file('image_file')->store('category_images', 'public');
-            
-        } elseif ($request->filled('image_url')) {
-            $imagePath = $request->input('image_url');
-            
-        }
 
-        // 3. Update the Category
+    // 3. Update the Category
     $category->update([
-    'name' => $request->name,
-    'short_desc' => $request->short_desc, 
-    'image' => $imagePath,
-]);
-        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully!');
-    }
+        'name' => $request->name,
+        'short_desc' => $request->short_desc, // <-- CORRECT: Field is included
+        'image' => $imagePath,
+    ]);
+    
+    return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully!');
+}
     
     // --- DELETE (Destroy) ---
     public function categoriesDestroy($id)
