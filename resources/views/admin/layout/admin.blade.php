@@ -1,109 +1,179 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>@yield('title', 'Admin Panel')</title>
-	<script src="https://cdn.tailwindcss.com"></script>
-	@stack('styles')
-	<style>
-		:root {
-			--primary: #3b82f6;
-			--primary-dark: #1e40af;
-			--accent: #f59e0b;
-			--background: #ffffff;
-			--foreground: #1f2937;
-			--muted: #9ca3af;
-			--border: #e5e7eb;
-		}
-		.admin-sidebar { min-height: 100vh; }
-	</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', 'Admin Panel')</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    @stack('styles')
+    <style>
+        /* Define a Deep Charcoal and Blue Accent theme */
+        :root {
+            --sidebar-bg: #111827; /* Deep Charcoal (bg-gray-900) */
+            --sidebar-text: #f3f4f6; /* Very light Gray */
+            --sidebar-active: #3b82f6; /* Bright Blue accent */
+            --header-bg: #ffffff;
+            --main-bg: #f9fafb; /* Soft Off-White */
+        }
+        
+        body {
+            background-color: var(--main-bg);
+        }
+
+        /* Custom class for active sidebar links */
+        .sidebar-link {
+            transition: all 0.15s ease-in-out;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-link:hover {
+            background-color: #1f2937; /* Slightly lighter charcoal for hover */
+        }
+        /* Active link styling */
+        .sidebar-link.active {
+            background-color: #1f2937; 
+            color: var(--sidebar-active);
+            border-left-color: var(--sidebar-active);
+            font-weight: 600;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
-	<div class="min-h-screen flex flex-col">
-		<!-- Top Navigation Bar -->
-		<nav class="sticky top-0 z-50 bg-white border-b border-gray-200">
-			<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-				<div class="flex items-center gap-6">
-					<a href="/admin" class="text-2xl font-bold text-gray-800">BlogHub Admin</a>
-				</div>
-				<div class="flex items-center gap-6">
-					<a href="/" class="text-gray-700 hover:text-gray-900 font-semibold transition">← Back to Site</a>
-					<span class="text-sm text-gray-600">Welcome, <strong>{{ auth()->user()->name ?? 'Admin' }}</strong></span>
-					<a href="/logout" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition font-semibold text-sm">Logout</a>
-				</div>
-			</div>
-		</nav>
+<body class="text-gray-900">
 
-		<!-- Main Content with Sidebar -->
-		<div class="flex flex-1">
-			<!-- Sidebar -->
-			<aside class="w-64 bg-white border-r border-gray-200 hidden md:block">
-				<nav class="p-6">
-					<h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6">Menu</h3>
-					<ul class="space-y-2">
-						<li><a href="/admin/dashboard" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Dashboard</a></li>
-						<li><a href="/admin/dashboard/posts" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Posts</a></li>
-						<li><a href="/admin/dashboard/categories" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Categories</a></li>
-						<li><a href="/admin/dashboard/banner" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Banner</a></li>
-						<li><a href="/admin/dashboard/profile" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">Profile</a></li>
-						<li><hr class="my-3 border-gray-200"></li>
-						<li><a href="/" class="block px-4 py-3 rounded text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition font-semibold">View Site</a></li>
-					</ul>
-				</nav>
-			</aside>
+   {{-- 💡 Data Retrieval Logic for the Profile Display 💡 --}}
+    @php
+        // 1. Get the user ID from the session as requested
+        $currentUserId = session('user_id'); 
+        $sessionUser = null;
+        
+        if ($currentUserId) {
+            // NOTE: Ensure your AuthorUser model is correctly namespaced here
+            try {
+                $sessionUser = \App\Models\AuthorUser::find($currentUserId);
+            } catch (\Throwable $e) {
+                $sessionUser = null; 
+            }
+        }
+        
+        // 2. Set display variables with fallbacks
+        $userName = $sessionUser->name ?? 'Guest';
+        $userRole = $sessionUser->role ?? 'Author'; 
+        // Assuming a route named 'admin.profile' exists for the profile page
+        $profileRoute = route('admin.profile'); 
+        
+        // 3. Determine Avatar URL, prioritizing stored file or URL
+        $userImage = $sessionUser->image ?? null; 
+        $avatarUrl = null;
 
-			<!-- Main Content -->
-			<main class="flex-1 p-8">
-				@yield('content')
-			</main>
-		</div>
+        if ($userImage) {
+            // Check if the path is an external URL
+            if (str_starts_with($userImage, 'http')) {
+                $avatarUrl = $userImage;
+            } 
+            // Check if the path is a local storage path (DBlink setup)
+            else if (Storage::disk('public')->exists($userImage)) {
+                // Use asset('storage/...') for local files linked via storage:link
+                $avatarUrl = asset('storage/' . $userImage); 
+            }
+        }
+        
+        // 4. Fallback to auto-generated avatar if no image is found or path is invalid
+        if (!$avatarUrl) {
+            $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($userName) . "&background=3b82f6&color=fff&size=256&bold=true";
+        }
+    @endphp
 
-		<!-- Footer -->
-		<footer class="bg-gray-900 text-gray-100 py-12 px-4 mt-12">
-			<div class="max-w-6xl mx-auto">
-				<div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-					<div>
-						<h4 class="font-semibold mb-4">Product</h4>
-						<ul class="space-y-2 text-sm text-gray-400">
-							<li><a href="#" class="hover:text-white transition">Features</a></li>
-							<li><a href="#" class="hover:text-white transition">Pricing</a></li>
-							<li><a href="#" class="hover:text-white transition">Security</a></li>
-						</ul>
-					</div>
-					<div>
-						<h4 class="font-semibold mb-4">Company</h4>
-						<ul class="space-y-2 text-sm text-gray-400">
-							<li><a href="#" class="hover:text-white transition">About</a></li>
-							<li><a href="#" class="hover:text-white transition">Blog</a></li>
-							<li><a href="#" class="hover:text-white transition">Careers</a></li>
-						</ul>
-					</div>
-					<div>
-						<h4 class="font-semibold mb-4">Legal</h4>
-						<ul class="space-y-2 text-sm text-gray-400">
-							<li><a href="#" class="hover:text-white transition">Privacy</a></li>
-							<li><a href="#" class="hover:text-white transition">Terms</a></li>
-							<li><a href="#" class="hover:text-white transition">Contact</a></li>
-						</ul>
-					</div>
-					<div>
-						<h4 class="font-semibold mb-4">Social</h4>
-						<ul class="space-y-2 text-sm text-gray-400">
-							<li><a href="#" class="hover:text-white transition">Twitter</a></li>
-							<li><a href="#" class="hover:text-white transition">GitHub</a></li>
-							<li><a href="#" class="hover:text-white transition">LinkedIn</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-					<p>&copy; 2025 BlogHub. All rights reserved.</p>
-				</div>
-			</div>
-		</footer>
-	</div>
+    {{-- ... rest of the HTML layout remains the same ... --}}
 
-	@stack('scripts')
+    <div class="min-h-screen flex">
+        
+        <aside class="w-64 bg-gray-900 text-gray-100 flex-shrink-0 admin-sidebar hidden md:block border-r border-gray-900">
+            <div class="p-6 h-20 flex items-center border-b border-gray-700">
+                <a href="/admin/dashboard" class="text-xl font-extrabold tracking-wider text-white">Blog Console</a>
+            </div>
+            
+            <nav class="p-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-3">Main Menu</h3>
+                <ul class="space-y-1">
+                    
+                    <li><a href="/admin/dashboard" class="sidebar-link block px-3 py-3 rounded-md text-gray-200 
+                        {{ request()->is('admin/dashboard') ? 'active' : '' }}">
+                        <span class="mr-2 text-xl">🏠</span> Dashboard
+                    </a></li>
+                    
+                    <li><a href="/admin/dashboard/posts" class="sidebar-link block px-3 py-3 rounded-md text-gray-200
+                        {{ request()->is('admin/dashboard/posts*') ? 'active' : '' }}">
+                        <span class="mr-2 text-xl">📝</span> Posts
+                    </a></li>
+                    
+                    <li><a href="/admin/dashboard/categories" class="sidebar-link block px-3 py-3 rounded-md text-gray-200
+                        {{ request()->is('admin/dashboard/categories*') ? 'active' : '' }}">
+                        <span class="mr-2 text-xl">🏷️</span> Categories
+                    </a></li>
+                    
+                    <li><a href="/admin/dashboard/profile" class="sidebar-link block px-3 py-3 rounded-md text-gray-200
+                        {{ request()->is('admin/dashboard/profile*') ? 'active' : '' }}">
+                        <span class="mr-2 text-xl">👤</span> Profile
+                    </a></li>
+                </ul>
+
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-8 mb-3 px-3">Actions</h3>
+                <ul class="space-y-1">
+                    <li><a href="/" class="sidebar-link block px-3 py-3 rounded-md text-green-400 hover:text-green-300">
+                        <span class="mr-2 text-xl">🌐</span> View Live Site
+                    </a></li>
+                    <li><a href="{{ route('custom.logout') }}" class="sidebar-link block px-3 py-3 rounded-md text-red-400 hover:text-red-300">
+                        <span class="mr-2 text-xl">🚪</span> Logout
+                    </a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            
+            <header class="h-20 sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-6">
+                
+                <h2 class="text-xl font-semibold text-gray-900">@yield('title', 'Dashboard Overview')</h2> 
+                
+                <div class="flex items-center">
+                    
+                    {{-- 🌟 DYNAMIC PROFILE DISPLAY 🌟 --}}
+                    <a href="{{ $profileRoute }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 transition duration-150">
+                        
+                        {{-- 1. Profile Picture/Avatar --}}
+                        <div class="w-10 h-10 rounded-full overflow-hidden bg-blue-100 border-2 border-white shadow-sm">
+                            <img src="{{ $avatarUrl }}" 
+                                 alt="{{ $userName }}" 
+                                 class="w-full h-full object-cover">
+                        </div>
+                        
+                        {{-- 2. User Name and Role --}}
+                        <div class="hidden sm:flex flex-col items-start leading-tight">
+                            <span class="font-semibold text-gray-800 text-sm">
+                                {{ $userName }}
+                            </span>
+                            <span class="text-xs text-gray-500">
+                                {{ $userRole }}
+                            </span>
+                        </div>
+                        
+                        {{-- 3. Profile Indicator --}}
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        
+                    </a>
+                    
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6">
+                @yield('content')
+            </main>
+            
+            <footer class="text-center py-3 text-xs text-gray-500 border-t border-gray-200 bg-white">
+                &copy; 2025 Blog Admin Console. Built with Laravel & Tailwind.
+            </footer>
+        </div>
+    </div>
+
+    @stack('scripts')
 </body>
 </html>
-

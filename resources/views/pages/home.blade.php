@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Home - BlogHub: Our Story and Mission')
 @section('content')
 <!-- Hero Section with Background Image -->
 <div class="relative bg-cover bg-center h-96" style="background-image: url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=500&fit=crop');">

@@ -44,16 +44,15 @@ class AdminController extends Controller
         $currentUserId = $request->session()->get('user_id');
         
         if (!$currentUserId) {
-            // If the user ID is missing from the session, return no posts
              $blogs = collect(); 
              return view('admin.pages.manegeBlogs', compact('blogs'));
         }
     
         // 2. Fetch all blogs posted by this specific user ID
         $blogs = Blog::with('category', 'author') 
-                     ->where('user_id', $currentUserId) 
-                     ->latest()
-                     ->get();
+                    ->where('user_id', $currentUserId) 
+                    ->latest()
+                    ->get();
                     
         return view('admin.pages.manegeBlogs', compact('blogs'));
     }
@@ -116,7 +115,6 @@ class AdminController extends Controller
             'is_featured' => false,
         ]);
         
-        // 5. Redirect (Changed to admin.posts.index for consistency with listing page)
         return redirect()->route('admin.posts.index')->with('success', 'Blog post created successfully!');
     }
     
@@ -146,13 +144,12 @@ class AdminController extends Controller
         // 2. Find the existing blog post
         $blog = Blog::findOrFail($id);
 
-        // 3. Handle Image Update logic (CRITICAL FIX: Full image handling logic)
         $imagePath = $blog->image; 
         
         if ($request->hasFile('image_file')) {
-            // Delete old file if it was a storage file
+            
             if ($blog->image && strpos($blog->image, 'http') === false) {
-                 Storage::disk('public')->delete($blog->image);
+                Storage::disk('public')->delete($blog->image);
             }
             $imagePath = $request->file('image_file')->store('blog_images', 'public');
             
@@ -161,9 +158,9 @@ class AdminController extends Controller
             
         } 
 
-        // 4. Handle Published Date Update
+        
         $isPublished = $request->has('published');
-        // If it was already published, keep the existing published_date; otherwise set it now. 
+        
         $publishedDate = $isPublished ? ($blog->published_date ?? Carbon::now()) : null;
 
 
@@ -176,7 +173,7 @@ class AdminController extends Controller
             'image' => $imagePath,
             'published_date' => $publishedDate,
             'tags' => $request->tags, 
-            // Read time and is_featured are constants/not changed via form
+            
         ]);
 
         // 6. Redirect
@@ -188,9 +185,9 @@ class AdminController extends Controller
     {
         $blog = Blog::findOrFail($id);
         
-        // OPTIONAL: Delete the associated image file from storage
+        
         if ($blog->image && strpos($blog->image, 'http') === false) {
-             Storage::disk('public')->delete($blog->image);
+            Storage::disk('public')->delete($blog->image);
         }
 
         $blog->delete();
@@ -198,25 +195,6 @@ class AdminController extends Controller
         return redirect()->route('admin.posts.index')->with('success', 'Blog post deleted successfully.');
     }
 
-    // --- Management Stubs ---
-    
-    public function bannerIndex()
-    {
-        // Get current banner or create default
-        $banner = [
-            'id' => 1,
-            'image' => 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=400&fit=crop',
-            'heading' => 'Welcome to Our Blog',
-            'subheading' => 'Explore amazing stories and insights'
-        ];
-        return view('admin.pages.addBanner', ['banner' => $banner, 'isEdit' => true]);
-    }
-
-    public function bannerCreate()
-    {
-        $banner = null;
-        return view('admin.pages.addBanner', ['banner' => $banner, 'isEdit' => false]);
-    }
 
     public function bannerStore(Request $request)
     {
@@ -235,7 +213,7 @@ class AdminController extends Controller
     // --- CREATE (Form) ---
     public function categoriesCreate()
     {
-        return view('admin.pages.newCategories'); // This maps to your provided 'addcategory page'
+        return view('admin.pages.newCategories'); 
     }
 
     // --- CREATE (Store) ---
@@ -244,7 +222,7 @@ class AdminController extends Controller
         // 1. Validation
         $request->validate([
     'name' => 'required|max:255|unique:categories,name',
-    'short_desc' => 'nullable|max:500', // <-- FIX 1: Use short_desc
+    'short_desc' => 'nullable|max:500', 
     'image_file' => 'nullable|image|max:2048', 
     'image_url' => 'nullable|url',
 ]);
@@ -261,7 +239,7 @@ class AdminController extends Controller
         // 3. Create the Category
         Category::create([
     'name' => $request->name,
-    'short_desc' => $request->short_desc, // <-- FIX 2: Use short_desc
+    'short_desc' => $request->short_desc, 
     'image' => $imagePath,
 ]);
 
@@ -271,33 +249,33 @@ class AdminController extends Controller
     // --- EDIT (Form) ---
     public function categoriesEdit($id)
     {
-        // Fetch the category to edit
+        
         $category = Category::findOrFail($id); 
         
-        // Use the same view template for adding/editing (or create a new one, but we will reuse the form structure)
+        
         return view('admin.pages.updateCategory', compact('category')); 
     }
     
-    // --- UPDATE (Submission) ---
+    
     public function categoriesUpdate(Request $request, $id)
     {
-        // 1. Validation (Use Rule::unique to ignore the current category's name)
+        
         $request->validate([
     'name' => 'required|max:255|unique:categories,name,'.$id,
-    'short_desc' => 'nullable|max:500', // <-- FIX 1: Use short_desc
+    'short_desc' => 'nullable|max:500', 
     'image_file' => 'nullable|image|max:2048', 
     'image_url' => 'nullable|url',
 ]);
         
         $category = Category::findOrFail($id);
         
-        // 2. Handle Image Update logic
+        
         $imagePath = $category->image; 
         
         if ($request->hasFile('image_file')) {
-            // Delete old file if it was a storage file
+            
             if ($category->image && strpos($category->image, 'http') === false) {
-                 Storage::disk('public')->delete($category->image);
+                Storage::disk('public')->delete($category->image);
             }
             $imagePath = $request->file('image_file')->store('category_images', 'public');
             
@@ -307,9 +285,9 @@ class AdminController extends Controller
         }
 
         // 3. Update the Category
-       $category->update([
+    $category->update([
     'name' => $request->name,
-    'short_desc' => $request->short_desc, // <-- FIX 2: Use short_desc
+    'short_desc' => $request->short_desc, 
     'image' => $imagePath,
 ]);
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully!');
@@ -320,9 +298,8 @@ class AdminController extends Controller
     {
         $category = Category::findOrFail($id);
         
-        // OPTIONAL: Delete the associated image file from storage
         if ($category->image && strpos($category->image, 'http') === false) {
-             Storage::disk('public')->delete($category->image);
+            Storage::disk('public')->delete($category->image);
         }
 
         $category->delete();

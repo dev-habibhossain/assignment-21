@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthorController; // <-- Ensure this is present
 
 // --- Public Routes ---
 Route::get('/', [PublicController::class, 'home'])->name('home');
+Route::get('/about', [PublicController::class, 'about'])->name('about');
 
 // --- Auth Routes ---
 Route::get('/login', [AuthController::class, 'login'])->name('login');

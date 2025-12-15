@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Blogs - BlogHub: Our Story and Mission')
 @section('content')
 <!-- Hero Section -->
 <div class="relative bg-cover bg-center py-16" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=400&fit=crop');">
