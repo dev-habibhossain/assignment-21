@@ -39,7 +39,9 @@ Route::prefix('admin/dashboard')
         Route::get('/posts', [AdminController::class, 'postsIndex'])->name('admin.posts.index');
         Route::get('/posts/create', [AdminController::class, 'postsCreate'])->name('admin.posts.create');
         Route::post('/posts/submit', [AdminController::class, 'store'])->name('admin.posts.store'); // <-- This is the route used for creating the blog
-        Route::get('/posts/{id}/edit', [AdminController::class, 'postsEdit'])->name('admin.posts.edit');
+        Route::get('/posts/edit/{id}', [AdminController::class, 'postsEdit'])->name('admin.posts.edit'); 
+        Route::put('/posts/{id}', [AdminController::class, 'update'])->name('admin.posts.update');
+        Route::delete('/posts/{id}', [AdminController::class, 'destroy'])->name('admin.posts.destroy');
 
         // Banner management
         Route::get('/banner', [AdminController::class, 'bannerIndex'])->name('admin.banner.index');
@@ -49,8 +51,15 @@ Route::prefix('admin/dashboard')
 
         // Categories management
         Route::get('/categories', [AdminController::class, 'categoriesIndex'])->name('admin.categories.index');
-        Route::get('/categories/create', [AdminController::class, 'categoriesCreate'])->name('admin.categories.create');
-        Route::post('/categories', [AdminController::class, 'categoriesStore'])->name('admin.categories.store');
+Route::get('/categories/create', [AdminController::class, 'categoriesCreate'])->name('admin.categories.create');
+Route::post('/categories', [AdminController::class, 'categoriesStore'])->name('admin.categories.store');
+
+// *** NEW: Edit Form ***
+Route::get('/categories/{id}/edit', [AdminController::class, 'categoriesEdit'])->name('admin.categories.edit'); 
+// *** NEW: Update Submission ***
+Route::put('/categories/{id}', [AdminController::class, 'categoriesUpdate'])->name('admin.categories.update'); 
+// *** NEW: Delete ***
+Route::delete('/categories/{id}', [AdminController::class, 'categoriesDestroy'])->name('admin.categories.destroy');
         
 });
 
@@ -67,7 +76,7 @@ Route::prefix('author/dashboard')
         // Posts management
         Route::get('/posts', [AuthorController::class, 'postsIndex'])->name('author.posts.index');
         Route::get('/posts/create', [AuthorController::class, 'postsCreate'])->name('author.posts.create');
-        Route::get('/posts/{id}/edit', [AuthorController::class, 'postsEdit'])->name('author.posts.edit');
+        Route::get('/posts/edit/{id}', [AuthorController::class, 'postsEdit'])->name('author.posts.edit');
         
         // If authors can also submit posts, you would add a route here:
         // Route::post('/posts/submit', [AuthorController::class, 'store'])->name('author.posts.store');

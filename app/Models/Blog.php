@@ -36,4 +36,6 @@ class Blog extends Model
     {
         return $this->belongsTo(AuthorUser::class, 'user_id');
     }
+    
+    
 }
