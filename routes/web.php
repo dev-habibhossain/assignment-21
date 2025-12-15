@@ -15,6 +15,7 @@ Route::post('/register/submit', [AuthController::class, 'userRegister'])->name('
 Route::get('/logout', [AuthController::class, 'logOut'])->middleware('auth')->name('custom.logout');
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/blogs/category/{category}', [BlogController::class, 'byCategory'])->name('blogs.byCategory');
 Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
 Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('blogs.show');
 
