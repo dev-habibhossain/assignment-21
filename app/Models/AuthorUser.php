@@ -13,4 +13,9 @@ class AuthorUser extends Model
     'image', 
     'role',
 ];
+
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class);
+    }
 }

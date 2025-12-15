@@ -2,18 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuthorUser;
+use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        return view('admin.pages.home');
+        $blogs = Blog::with('category', 'author')->latest()->get();
+        $totalUsers = AuthorUser::where('role', 'author')->count(); 
+        $categories = Category::all();
+        return view('admin.pages.home', compact('blogs', 'categories', 'totalUsers'));
     }
+
 
     public function profile()
     {
-        return view('admin.pages.profile');
+        $user = AuthorUser::find();
+        dd( $user);
+        return view('admin.pages.profile', compact('user'));
     }
 
     public function editProfile()
@@ -29,7 +40,67 @@ class AdminController extends Controller
 
     public function postsCreate()
     {
-        return view('admin.pages.addBlog');
+        $categories = Category::all();
+        return view('admin.pages.addBlog', compact('categories'));
+    }
+    //post store method
+   public function store(Request $request)
+    {
+        // --- 1. Validation ---
+        $request->validate([
+            'title' => 'required|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'excerpt' => 'required|max:500', 
+            'full_desc' => 'required',
+            'image_file' => 'nullable|image|max:2048', 
+            'image_url' => 'nullable|url',
+            'tags' => 'nullable|string|max:255',
+        ]);
+
+        // --- 2. Determine Image Path ---
+        $imagePath = 'https://via.placeholder.com/1200x600?text=Blog+Image'; 
+
+        if ($request->hasFile('image_file')) {
+            $imagePath = $request->file('image_file')->store('blog_images', 'public');
+        } elseif ($request->filled('image_url')) {
+            $imagePath = $request->input('image_url');
+        }
+        
+        // --- 3. Determine auto-populated fields ---
+        
+        // Retrieve the user ID from the session as requested
+        $currentAuthorId = $request->session()->get('user_id'); // Recommended way to get session data in controller
+
+        // --- IMPORTANT FIX: Retrieve the user name using the ID ---
+        $author = AuthorUser::find($currentAuthorId);
+
+        // Safety check (If user is not found or ID is missing, we must handle it)
+        if (!$author) {
+            return redirect()->back()->withInput()->withErrors(['session_error' => 'User session data is invalid. Please log in again.']);
+        }
+        
+        $authorName = $author->name; // Assuming the name column on AuthorUser is 'name'
+
+        // Handle published status and date
+        $isPublished = $request->has('published');
+        $publishedDate = $isPublished ? Carbon::now() : null;
+        
+        // --- 4. Create the Blog Post ---
+        $blog = Blog::create([
+            'title' => $request->title,
+            'category_id' => $request->category_id,
+            'user_id' => $currentAuthorId, // Value taken from session
+            'author_name' => $authorName, // <-- FIX: Added author_name
+            'summary' => $request->excerpt, 
+            'full_desc' => $request->full_desc, 
+            'image' => $imagePath,
+            'read_time' => 5,
+            'published_date' => $publishedDate,
+            'is_featured' => false,
+        ]);
+        
+        // 5. Redirect
+        return redirect()->route('admin.home')->with('success', 'Blog post created successfully!');
     }
 
     public function postsEdit($id)
