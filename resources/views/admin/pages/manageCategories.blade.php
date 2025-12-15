@@ -24,40 +24,65 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Categories</h3>
-            @forelse($categories as $category)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="border border-gray-200 rounded-md p-4">
-                        {{-- Determine image source: URL or stored asset --}}
-                        @php
-                            $imageSrc = (strpos($category->image, 'http') === 0) 
-                                ? $category->image 
-                                : ($category->image ? asset('storage/' . $category->image) : 'https://via.placeholder.com/300x200?text=No+Image');
-                        @endphp
-                        
-                        <img src="{{ $imageSrc }}" 
-                             alt="{{ $category->name }}" 
-                             class="w-full h-32 object-cover rounded-md mb-3"
-                             onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200?text=No+Image';">
-                             
-                        <h4 class="text-lg font-bold text-gray-900">{{ $category->name }}</h4>
-                        <p class="text-sm text-gray-600 mt-1">{{ $category->short_desc ?? 'No description' }}</p>
-                        
-                        <div class="mt-3 flex gap-2">
-                            {{-- EDIT Link --}}
-                            <a href="{{ route('admin.categories.edit', $category->id) }}" class="text-sm text-blue-600 hover:text-blue-800">Edit</a>
-                            
-                            {{-- DELETE Form --}}
-                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete the category: {{ $category->name }}?');" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-sm text-red-600 hover:text-red-800">Delete</button>
-                            </form>
-                        </div>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    @forelse($categories as $category)
+        {{-- 2. Burnished Card Design (Repeated for each $category) --}}
+        <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100 flex flex-col">
+            
+            {{-- Image Container --}}
+            @php
+                // Define image source logic once
+                $imageSrc = (strpos($category->image, 'http') === 0) 
+                    ? $category->image 
+                    : ($category->image ? asset('storage/' . $category->image) : 'https://via.placeholder.com/400x250?text=No+Image');
+            @endphp
+            
+            <div class="relative h-40 bg-gray-100 overflow-hidden">
+                <img src="{{ $imageSrc }}" 
+                    alt="{{ $category->name }}" 
+                    class="w-full h-full object-cover transition duration-500 ease-in-out hover:scale-105"
+                    onerror="this.onerror=null;this.src='https://via.placeholder.com/400x250?text={{ urlencode($category->name) }}';">
+            </div>
+
+            {{-- Content and Actions --}}
+            <div class="p-5 flex flex-col flex-grow">
+                <h4 class="text-xl font-extrabold text-gray-900 mb-2">{{ $category->name }}</h4>
+                <p class="text-sm text-gray-600 mb-4 flex-grow">{{ $category->short_desc ?? 'No brief description available.' }}</p>
+                
+                {{-- Actions --}}
+                <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                    
+                    {{-- Edit Link --}}
+                    <a href="{{ route('admin.categories.edit', $category->id) }}" class="px-3 py-1 text-xs font-semibold text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition">
+                        Edit
+                    </a>
+                    
+                    {{-- DELETE Form --}}
+                    <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete the category: {{ $category->name }}? This action cannot be undone.');" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-3 py-1 text-xs font-semibold text-white bg-red-600 rounded-md hover:bg-red-700 transition shadow-md">
+                            Delete
+                        </button>
+                    </form>
                 </div>
-            @empty
-                <p class="text-gray-500">No categories yet. <a href="{{ route('admin.categories.create') }}" class="text-blue-600 hover:text-blue-800">Create one</a>.</p>
-            @endforelse
+            </div>
+        </div>
+        
+    @empty
+        {{-- 3. Empty State (Displayed when $categories is empty) --}}
+        <div class="md:col-span-3 p-6 bg-white rounded-xl shadow-md text-center">
+            <p class="text-gray-600 text-lg">
+                No categories have been created yet.
+            </p>
+            <a href="{{ route('admin.categories.create') }}" class="mt-4 inline-block text-blue-600 font-semibold hover:text-blue-800 transition">
+                Click here to add the first category
+            </a>
+        </div>
+    @endforelse
+
+</div>
         </div>
     </div>
 </div>
